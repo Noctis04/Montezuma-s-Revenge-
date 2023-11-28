@@ -1,6 +1,6 @@
 
 class Sprite:
-    def __init__(self, file_name, start_x, start_y, height, width, pos_x, pos_y):
+    def __init__(self, file_name, pos_x=0, pos_y=0, start_x=0, start_y=0, height=None, width=None):
         """
 
         Инициализирует объект Sprite.

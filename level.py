@@ -1,78 +1,12 @@
-level = [
-    {'image': "MainBackGround.png", 'x': 0, 'y': 0},
-    {'image': "block.png", 'x': 0, 'y': 650},
-    {'image': "block.png", 'x': 240, 'y': 650},
-    {'image': "block.png", 'x': 480, 'y': 650},
-    {'image': "block.png", 'x': 720, 'y': 650},
-    {'image': "block.png", 'x': 960, 'y': 650},
+from the_world import World
+class Level(World):
+    tiles = 'tileMap1.png'
+    def __init__(self, count_w, count_h):
+        self.count_w = count_w
+        self.count_h = count_h
+        self.tile_map = [[0 for x in range(count_w)] for y in range(count_h)]
 
-    {'image': "block.png", 'x': 200, 'y': 360},
-    {'image': "block.png", 'x': 520, 'y': 200},
-    {'image': "block.png", 'x': 900, 'y': 300},
-
-
-    #{'image': "Character1.png", 'x': 72, 'y': 470},
-]
-
-# Пример уровня (уровень 1)
-level_1 = [
-    # Комната 1
-    [
-        "#########",
-        "#   E   #",
-        "#       #",
-        "#   P   #",
-        "#       #",
-        "#   K   #",
-        "#       #",
-        "#########",
-    ],
-    # Комната 2
-    [
-        "#########",
-        "#   T   #",
-        "#       #",
-        "#       #",
-        "#   S   #",
-        "#       #",
-        "#       #",
-        "#########",
-    ],
-    # Другие комнаты уровня...
-]
-
-# Пример уровня (уровень 2)
-level_2 = [
-    # Комната 1
-    [
-        "#########",
-        "#       #",
-        "#       #",
-        "#   P   #",
-        "#       #",
-        "#   K   #",
-        "#       #",
-        "#########",
-    ],
-    # Комната 2
-    [
-        "#########",
-        "#   T   #",
-        "#       #",
-        "#       #",
-        "#   S   #",
-        "#       #",
-        "#       #",
-        "#########",
-    ],
-    # Другие комнаты уровня...
-]
-
-# # представляет стены и границы комнаты.
-# E - вход в уровень.
-# P - местоположение игрока.
-# K - ключ.
-# T - ловушка.
-# S - сокровище.
-levels = [level_1, level_2]
-
+    def fill(self, cell, start_x = 0, start_y = 0, count_x = None, count_y =None):
+        for y in range(start_y, start_y + count_y if count_y is not None else self.count_h):
+            for x in range(start_x, start_x + count_x if count_x is not None else self.count_w):
+                self.tile_map[y][x] = cell

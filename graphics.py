@@ -7,6 +7,7 @@ KEY_RIGHT = SDLK_RIGHT
 KEY_UP = SDLK_UP
 
 RESOURCES = None
+SPRITES = "Images"
 window_width = 1024
 window_height = 768
 window = None
@@ -19,24 +20,24 @@ tile_width = 8
 tile_height = 8
 tiles_count_w = 0
 tiles_count_h = 0
+FRAME = 5
 
-def init(window_width, window_height):
+def init(width, height):
     """
     Инициализация окна и графики.
     """
-    global RESOURCES, window, renderer
+    global RESOURCES, window, renderer, window_height, window_width
+    window_height = height
+    window_width = width
     sdl2.ext.init()
-    RESOURCES = sdl2.ext.Resources(__file__, "Images")
+    RESOURCES = sdl2.ext.Resources(__file__, SPRITES)
     window = sdl2.ext.Window("Platformer", size=(window_width, window_height))
     window.show()
     renderer = SDL_CreateRenderer(window.window, -1, SDL_RENDERER_ACCELERATED)
-    print('renderer', SDL_GetError())
-
 def set_tiles(tile_map_data, tiles_image):
     global tile_map, tiles, tiles_count_w, tiles_count_h
     tile_map = tile_map_data
-    tiles = sdl2.ext.load_image(sdl2.ext.Resources(__file__, "Images").get_path(tiles_image))
-    print('ren', renderer)
+    tiles = sdl2.ext.load_image(sdl2.ext.Resources(__file__, SPRITES).get_path(tiles_image))
     tiles = SDL_CreateTextureFromSurface(renderer, tiles)
     tiles_count_w = len(tile_map_data[0])
     tiles_count_h = len(tile_map_data)
@@ -50,9 +51,12 @@ def add_sprite(sprite):
     :param pos_y: Начальная позиция по оси Y.
     :return: Созданный спрайт.
     """
-    sprite.image = sdl2.ext.load_image(sdl2.ext.Resources(__file__, "Images").get_path(sprite.file_name))
+    sprite.image = sdl2.ext.load_image(sdl2.ext.Resources(__file__, SPRITES).get_path(sprite.file_name))
+    if sprite.width is None:
+        sprite.width = sprite.image.w
+    if sprite.height is None:
+        sprite.height = sprite.image.h
     sprite.image = SDL_CreateTextureFromSurface(renderer, sprite.image)
-    print(SDL_GetError())
     sprites.append(sprite)
     return len(sprites) - 1
 
@@ -63,45 +67,35 @@ def remove_sprite(game_object):
     if game_object.sprite in sprites:
         sprites.remove(game_object.sprite)
 
+
+def clear():
+    sprites.clear()
+
 def draw_all():
     """
     Отрисовывает все спрайты на экране.
     """
-    window_surface = window.get_surface()
-
+    SDL_RenderClear(renderer)
     if tile_map is not None:
         for y in range(tiles_count_h):
             for x in range(tiles_count_w):
                 cell = tile_map[y][x]
                 SDL_RenderCopy(renderer, tiles,
-                #SDL_BlitSurface(tiles,
                                 SDL_Rect(cell * tile_width, 0, tile_width, tile_height),
-                                #window_surface,
                                 SDL_Rect(x * tile_width, y * tile_height,
                                          tile_width, tile_height))
     for sprite in sprites:
+        if sprite.flip_x:
+            flip = SDL_FLIP_HORIZONTAL
+        else:
+            flip = SDL_FLIP_NONE
 
-        sdl_rect = SDL_Rect(sprite.start_x, sprite.start_y, sprite.width, sprite.height)
-
-        # if sprite.flip_x:
-        #     sprite_x = sprite.x + sprite.width
-        #     SDL_BlitSurface(sprite.image, sdl_rect, window_surface,
-        #                     SDL_Rect(sprite_x, sprite.y, -sprite.width, sprite.height))
-        # else:
-        #     SDL_BlitSurface(sprite.image, sdl_rect, window_surface,
-        #                     SDL_Rect(sprite.x, sprite.y, sprite.width, sprite.height))
-        #if sprite.flip_x:
-        #    sdl_rect.w = -sdl_rect.w
-         #   sdl_rect.x += sdl_rect.w
-
-        #SDL_BlitSurface(sprite.image, sdl_rect, window_surface,
-        r = SDL_RenderCopy(renderer, sprite.image, sdl_rect,
-                        SDL_Rect(sprite.x, sprite.y, sprite.width, sprite.height))
-       # print(r, SDL_GetError())
+        SDL_RenderCopyEx(renderer, sprite.image,
+                        SDL_Rect(sprite.start_x, sprite.start_y, sprite.width, sprite.height),
+                        SDL_Rect(sprite.x, sprite.y, sprite.width, sprite.height), 0, None, flip)
         sprite.update()
-    #window.refresh()
     SDL_RenderPresent(renderer)
-    sdl2.SDL_Delay(5)
+    sdl2.SDL_Delay(FRAME)
 
 def process_events():
     """

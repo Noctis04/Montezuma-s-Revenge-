@@ -9,8 +9,7 @@ class PlatformerGame:
 
         """
         super().__init__()  # Вызов конструктора родительского класса
-        self.window_height = 1024
-        self.window_width = 800
+
 
         #self.world = World()
         #self.player = self.Player(self.add_sprite(self.player), self.key_pressed)
@@ -37,9 +36,8 @@ class PlatformerGame:
     def run(self):
         """
         Запуск игрового цикла.
-\
-        """
 
+        """
         while True:
             if process_events():
                 break
